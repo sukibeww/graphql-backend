@@ -1,1 +1,1 @@
-graphql-backend
+graphql-server
