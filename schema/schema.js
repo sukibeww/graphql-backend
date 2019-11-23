@@ -16,7 +16,7 @@ const {
 const BookType = new GraphQLObjectType({
     name: 'Book',
     fields: () => ({
-        id: {type: GraphQLID},
+        id: {type: GraphQLID}, 
         name: {type: GraphQLString},
         genre: {type: GraphQLString},
         author: {
@@ -78,6 +78,36 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+        updateBook: {
+            type: BookType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)},
+                name: {type: new GraphQLNonNull(GraphQLString)},
+                genre: {type: new GraphQLNonNull(GraphQLString)},
+                authorId: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent, args){
+                const updatedBook = Book.findByIdAndUpdate(args.id, args, (err) => {
+                    return err
+                })
+                return updatedBook;
+            }
+        },
+        deleteBook : {
+            type: BookType,
+            args: {id: {type: new GraphQLNonNull(GraphQLID)}},
+            resolve(parent, args){
+                const deletedBook = new Book({
+                    name: "Deleted",
+                    genre: "Deleted",
+                    authorId: "Deleted"
+                });
+                Book.findByIdAndRemove(args.id, (err) => {
+                    return err
+                })
+                return deletedBook;
+            }
+        },
         addAuthor: {
             type: AuthorType,
             args: {
