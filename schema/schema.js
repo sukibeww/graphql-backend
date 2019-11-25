@@ -10,7 +10,8 @@ const {
     GraphQLID,
     GraphQLInt,
     GraphQLList,
-    GraphQLNonNull
+    GraphQLNonNull,
+    GraphQL
 } = graphql;
 
 const BookType = new GraphQLObjectType({
@@ -95,7 +96,7 @@ const Mutation = new GraphQLObjectType({
         },
         deleteBook : {
             type: BookType,
-            args: {id: {type: new GraphQLNonNull(GraphQLID)}},
+            args: {id: {type:  new GraphQLNonNull(GraphQLID)}},
             resolve(parent, args){
                 const deletedBook = new Book({
                     name: "Deleted",
@@ -106,6 +107,26 @@ const Mutation = new GraphQLObjectType({
                     return err
                 })
                 return deletedBook;
+            }
+        },
+        deleteBookByAuthor : {
+            type: BookType,
+            args: {id: {type: new GraphQLNonNull(GraphQLID)}},
+            resolve(parent, args){
+                const deletedBooks = new Book({
+                    name: "Deleted",
+                    genre: "Deleted",
+                    authorId: "Deleted"
+                });
+                Book.deleteMany({authorId: args.id}, (err)=> {
+                    if(err){
+                        return err;
+                    }
+                    else{ 
+                        return deletedBooks;
+                    }
+                })
+                return deletedBooks;
             }
         },
         addAuthor: {
@@ -120,6 +141,27 @@ const Mutation = new GraphQLObjectType({
                     age: args.age
                 });
                 return author.save();
+            }
+        },
+        deleteAuthor: {
+            type: AuthorType,
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent, args){
+                const deletedAuthor = new Author({
+                    name: "Delete",
+                    age: 0
+                })
+                Author.findByIdAndDelete(args.id, (err) => {
+                    if(err){
+                        return err;
+                    }
+                    else{
+                        return deletedAuthor;
+                    }
+                });
+                return deletedAuthor;
             }
         },
         addBook: {
